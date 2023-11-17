@@ -1,10 +1,36 @@
-import asyncio
-from prisma import Prisma
+#import asyncio
+from fastapi import FastAPI
+from pydantic import BaseModel
+from app.db import connect_db, disconnect_db, db
 
 
+app = FastAPI()
+app.add_event_handler('startup', connect_db)
+app.add_event_handler('shutdown', disconnect_db)
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+class User(BaseModel):
+    username: str
+
+
+@app.post('/user')
+async def create_user(req: User):
+    await db.post.create({
+        "published": True,
+        "title": "My title",
+        
+    })
+    user = await db.user.create({
+        "username": req.username
+    })
+    return {"id": user.id}
+
+"""
 async def main() -> None:
-    db = Prisma(use_dotenv=True)
-    await db.connect()
+
 
     post = await db.post.create(
         {
@@ -38,9 +64,11 @@ async def main() -> None:
     result = await db.query_raw('SELECT * FROM post')
     print(result)
 
+    db.
     
     await db.disconnect()
 
 
 if __name__ == '__main__':
     asyncio.run(main())
+"""

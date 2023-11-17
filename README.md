@@ -11,4 +11,5 @@ Generate prisma client
 Run the postgres server with docker compose
 ```docker compose up```
 
-Run the `src/main.py`
+Run the api 
+```uvicorn app.main:app```
